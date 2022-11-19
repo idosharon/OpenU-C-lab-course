@@ -1,10 +1,11 @@
 cc = gcc
-flags = -Wall -ansi -pedantic 
-NAME = abc
+flags = -Wall -ansi -pedantic
 
-make: *.c
-	$(cc) -c *.c $(flags)
-	$(cc) *.o -o $(NAME)
+abc: abc.o shorten.o
+	$(cc) $(flags) -o abc abc.o shorten.o
 
-run: make
-	./$(NAME)
+shorten.o: shorten.c shorten.h
+	$(cc) $(flags) -c shorten.c
+
+abc.o: abc.c abc.h
+	$(cc) $(flags) -c abc.c

@@ -1,9 +1,11 @@
 cc = gcc
-flags = -Wall -ansi -pedantic 
-NAME = my_rottate
+flags = -Wall -ansi -pedantic
 
-make: *.c
-	$(cc) *.c -o $(NAME) $(flags)
+my_rottate: my_rottate.o rottate.o
+	$(cc) $(flags) -o my_rottate my_rottate.o rottate.o
 
-run: make
-	./$(NAME)
+my_rottate.o: my_rottate.c
+	$(cc) $(flags) -c my_rottate.c
+
+rottate.o: rottate.c rottate.h
+	$(cc) $(flags) -c rottate.c

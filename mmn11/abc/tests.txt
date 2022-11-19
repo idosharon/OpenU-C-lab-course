@@ -1,0 +1,11 @@
+>> ./abc < test1.txt
+Before: dabcefLMNOpQrstuv567xyz
+After: da-cefL-OpQr-v567x-z
+
+>> ./abc < test2.txt
+Before: ABCdefgh8910pqrstuMvwxYZ123ABCF
+After: A-Cd-h8910p-uMv-xYZ123A-CF
+
+>> ./abc < test3.txt
+Before: 123abcdefghijklmnopqrsMRtuvw5xyz
+After: 123a-sMRt-w5x-z

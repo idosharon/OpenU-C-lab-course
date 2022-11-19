@@ -1,0 +1,44 @@
+>> ./my_rottate
+Enter a number in decimal: 4  
+Enter number of bits to rotate: 2
+# num: 4, shift: 2 #
+base 10 (decimal): 4 -> 1
+base 16 (hex): 4 -> 1
+base 8 (octal): 4 -> 1
+base 2 (binary): 00000000000000000000000000000100 -> 00000000000000000000000000000001
+
+>> ./my_rottate
+Enter a number in decimal: 11
+Enter number of bits to rotate: -4
+# num: 11, shift: -4 #
+base 10 (decimal): 11 -> 176
+base 16 (hex): b -> b0
+base 8 (octal): 13 -> 260
+base 2 (binary): 00000000000000000000000000001011 -> 00000000000000000000000010110000
+
+>> ./my_rottate
+Enter a number in decimal: 109
+Enter number of bits to rotate: 4
+# num: 109, shift: 4 #
+base 10 (decimal): 109 -> 3489660934
+base 16 (hex): 6d -> d0000006
+base 8 (octal): 155 -> 32000000006
+base 2 (binary): 00000000000000000000000001101101 -> 11010000000000000000000000000110
+
+>> ./my_rottate
+Enter a number in decimal: 109
+Enter number of bits to rotate: -4
+# num: 109, shift: -4 #
+base 10 (decimal): 109 -> 1744
+base 16 (hex): 6d -> 6d0
+base 8 (octal): 155 -> 3320
+base 2 (binary): 00000000000000000000000001101101 -> 00000000000000000000011011010000
+
+>> ./my_rottate
+Enter a number in decimal: 7
+Enter number of bits to rotate: -30
+# num: 7, shift: -30 #
+base 10 (decimal): 7 -> 3221225473
+base 16 (hex): 7 -> c0000001
+base 8 (octal): 7 -> 30000000001
+base 2 (binary): 00000000000000000000000000000111 -> 11000000000000000000000000000001
