@@ -5,7 +5,6 @@ set sets[] = {{"SETA", {0}}, {"SETB", {0}},
               {"SETE", {0}}, {"SETF", {0}}};
 
 int main(int argc, char* argv[]) {
-    
     char* file_name = argv[1];
 
     /* read file line by line */

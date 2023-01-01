@@ -7,13 +7,11 @@ byte to_mask(int num) {
     return (0x1 << (num % BITS_PER_BYTE));
 }
 byte is_in_group(set* s, int num) {
-    get_element(num, idx, mask);
-    return (s->arr[idx] & mask);
+    return (s->arr[to_index(num)] & to_mask(num));
 }
 
 void insert(set* s, int num) {
-    get_element(num, idx, mask);
-    if ((s->arr[idx] & mask) == 0) s->arr[idx] += mask;
+    s->arr[to_index(num)] |= to_mask(num);
 }
 void read_set(set* s, int* arr, int len) {
     int i = 0;
@@ -34,6 +32,11 @@ void sub_set(set* A, set* B, set* C) {
 void symdiff_set(set* A, set* B, set* C) {
     int i = 0; 
     for (; i < LEN; C->arr[i] = (A->arr[i] ^ B->arr[i]), i++);
+}
+void amitai_set(set* A, set* B, set* C) {
+    sub_set(A, B, C);
+    intersect_set(A, B, A);
+    union_set(A, C, C);
 }
 void print_set(set* s) {
     int i = 0, counter = 0;

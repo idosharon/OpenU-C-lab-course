@@ -1,13 +1,14 @@
 #include "command.h"
 
 const command set_commands[] = {
-    {"union_set", SET_MANIPULATION, {.set_manipulation=&union_set} }, 
-    {"intersect_set", SET_MANIPULATION, {.set_manipulation=&intersect_set} }, 
-    {"sub_set", SET_MANIPULATION, {.set_manipulation=&sub_set} }, 
-    {"symdiff_set", SET_MANIPULATION, {.set_manipulation=&symdiff_set} }, 
-    {"print_set", SET_COMMAND, {.set_command.no_arguments=&print_set} }, 
-    {"read_set", SET_COMMAND, {.set_command.list_argument=&read_set} }, 
-    {"stop", PROGRAM, {.program=&stop} }
+    {"union_set", SET_MANIPULATION, {&union_set}}, 
+    {"intersect_set", SET_MANIPULATION, {&intersect_set} }, 
+    {"sub_set", SET_MANIPULATION, {&sub_set} }, 
+    {"symdiff_set", SET_MANIPULATION, {&symdiff_set} }, 
+    {"print_set", SET_COMMAND, {.set_command={&print_set}} }, 
+    {"read_set", SET_COMMAND, {.set_command={.list_argument=&read_set}} }, 
+    {"stop", PROGRAM, {.program=&stop} },
+    {"amitai_set", SET_MANIPULATION, {.set_manipulation=&amitai_set} }
 };
 
 const command* to_command(char* str) {

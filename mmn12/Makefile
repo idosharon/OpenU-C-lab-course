@@ -1,12 +1,11 @@
 cc = gcc
-flags = -Wall -ansi -pedantic 
-NAME = my_bcmp
+flags = -Wall -ansi -pedantic -std=c90
 
-make: *.c
-	$(cc) *.c -o $(NAME) $(flags)
+my_bcmp: my_bcmp.o
+	$(cc) $(flags) -o my_bcmp my_bcmp.o
 
-run: make
-	./$(NAME)
+my_bcmp.o: my_bcmp.c my_bcmp.h
+	$(cc) $(flags) -c my_bcmp.c
 
-clean:
-	rm -f $(NAME) *.o
+clean: 
+	rm -rf *.o my_bcmp .vscode .DS_Store

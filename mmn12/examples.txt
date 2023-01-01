@@ -1,0 +1,36 @@
+>> ./my_bcmp 
+Enter length to compare: 4
+Enter index 1: 2
+Enter index 2: 4
+Enter string: ctabababpq
+Comparing 4 bytes from 2 to 4
+The compared data is: abab and abab
+Result: Same Bytes
+
+>> ./my_bcmp
+Enter length to compare: 3
+Enter index 1: 0  
+Enter index 2: 4
+Enter string: abcdefghij
+Comparing 3 bytes from 0 to 4
+The compared data is: abc and efg
+Result: Different Bytes
+
+>> ./my_bcmp
+Enter length to compare: 10
+Enter index 1: 2
+Enter index 2: 504
+[error]: 504 - Invalid index: must be in string bounds
+
+>> ./my_bcmp
+Enter length to compare: a23
+[error]: Invalid length: must be an integer
+
+>> ./my_bcmp
+Enter length to compare: -2
+[error]: -2 - Invalid length: must be non negative
+
+>> ./my_bcmp
+Enter length to compare: 8
+Enter index 1: 513
+[error]: 513 - Invalid index: must be in string bounds
