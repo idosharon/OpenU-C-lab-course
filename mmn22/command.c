@@ -13,7 +13,7 @@ const command set_commands[] = {
 const command* to_command(char* str) {
     int i = 0;
     for (; i < LENGTH(set_commands); i++) {
-        if (equal(str, set_commands[i].value)) return &set_commands[i];
+        if (equal(str, set_commands[i].name)) return &set_commands[i];
     }
     return NULL;
 }
@@ -37,7 +37,6 @@ static char* next_token(char** str, char delimiter) {
         *str_p = p;
     };
 
-    
     for(; (c = *p++) != '\0' && c != delimiter;);
 
     return p;
@@ -82,74 +81,85 @@ static int is_number(char* str) {
 }
 
 int exec(char* str) {
+    /* get first token */
     char* p = next_token(&str, ' ');
-    
+
+    /* command pointer and get command name */
+    const command* command;
     char* command_name = strndup(str, p - str - 1);
+    
+    /* init list of sets arguments */
+    set** sets_args;
+
+    /* init number array for  */
+    int* arr = (int*) malloc(sizeof(int));
+    int len = 0, current_num = 0, error = 0;
+
+    char* set_str;
+    char* num_str;
+
+    set* current_set;
+
+    clean_spaces(command_name);
 
     if(contains(command_name, ',')) error("Illegal comma");
 
-    const command* command = to_command(command_name);
+    command = to_command(command_name);
     /* first check - command name */
     if (command == NULL) error("Undefined command name");
 
     /* create empty list of sets with size command->type_Command */
-    set** sets_args = (set**) malloc(sizeof(set*));
+    sets_args = (set**) malloc(sizeof(set*) * command->num_of_sets);
     
-    int i = 0;
-
-    for (; i < command->num_of_sets;)
+    for (; len < command->num_of_sets;)
     {
         if (*p == '\0') error("Missing parameter");
 
         p = next_token(NULL, ',');
 
-        char* set_str = strndup(str, p - str - 1);
+        set_str = strndup(str, p - str - 1);
 
-        int error = clean_spaces(set_str);
+        error = clean_spaces(set_str);
         
         if (error == 0) { error("Multiple consecutive commas"); }
         else if (error > 2) error("Missing comma");
         
-        set* set = to_set(set_str);
-        if (set == NULL) error("Undefined set name");
+        current_set = to_set(set_str);
+        if (current_set == NULL) error("Undefined set name");
 
         printf("set: %s\n", set_str);
         
-        sets_args[i++] = set;
-        sets_args = realloc(sets_args, i);
+        sets_args[len++] = current_set;
     }
 
-    int num;
-    int* arr = (int*) malloc(sizeof(int));
-    int len = 0;
-
     if (command->command_type == READ) {
+        len = 0;
         for (;;)
         {
             p = next_token(NULL, ',');
 
-            char* str_num = strndup(str, p - str - 1);
+            num_str = strndup(str, p - str - 1);
 
-            int error = clean_spaces(str_num);
+            error = clean_spaces(num_str);
 
-            if(*str_num == '\0') break;
+            if(*num_str == '\0') break;
         
             if (error == 0) { error("Multiple consecutive commas"); }
             else if (error > 2) error("Missing comma");
             
-            if(!is_number(str_num)) error("Invalid set member - not an integer");
+            if(!is_number(num_str)) error("Invalid set member - not an integer");
             
-            num = atoi(str_num);
+            current_num = atoi(num_str);
             
-            if (num == -1) break;
+            if (current_num == -1) break;
 
-            if(!IS_VALID(num)) error("Invalid set member - value out of range"); 
+            if(!IS_VALID(current_num)) error("Invalid set member - value out of range"); 
 
-            arr[len++] = num;
+            arr[len++] = current_num;
             arr = realloc(arr, len);
         }
 
-        if (num != -1) error("List of set members is not terminated correctly");
+        if (current_num != -1) error("List of set members is not terminated correctly");
     };
 
     if (*(p-1) != '\0') error("Extraneous text after end of command");

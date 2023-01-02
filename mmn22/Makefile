@@ -1,6 +1,6 @@
 cc = gcc
 flags = -Wall -ansi -pedantic -std=c90
-NAME = my_set
+NAME = myset
 
 objects = myset.o set.o command.o
 
