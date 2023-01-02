@@ -1,14 +1,13 @@
 #include "command.h"
 
 const command set_commands[] = {
-    {"union_set", SET_MANIPULATION, {&union_set}}, 
-    {"intersect_set", SET_MANIPULATION, {&intersect_set} }, 
-    {"sub_set", SET_MANIPULATION, {&sub_set} }, 
-    {"symdiff_set", SET_MANIPULATION, {&symdiff_set} }, 
-    {"print_set", SET_COMMAND, {.set_command={&print_set}} }, 
-    {"read_set", SET_COMMAND, {.set_command={.list_argument=&read_set}} }, 
-    {"stop", PROGRAM, {.program=&stop} },
-    {"amitai_set", SET_MANIPULATION, {.set_manipulation=&amitai_set} }
+    {"union_set", WRITE, 3, {&union_set}}, 
+    {"intersect_set", WRITE, 3, {&intersect_set} }, 
+    {"sub_set", WRITE, 3, {&sub_set} }, 
+    {"symdiff_set", WRITE, 3, {&symdiff_set} }, 
+    {"print_set", DEBUG, 1, {.debug=&print_set} }, 
+    {"read_set", READ, 1, {.read=&read_set} }, 
+    {"stop", NONE, 0, {.none=&stop} }
 };
 
 const command* to_command(char* str) {
@@ -26,89 +25,153 @@ set* to_set(char* str) {
     return NULL;
 }
 
+static char* next_token(char** str, char delimiter) {
+    static char* p;
+    static char** str_p;
+    char c;
 
-static void clean_spaces(char* str) {
+    if (str != NULL) {
+        str_p = str;
+        p = *str_p;
+    } else {
+        *str_p = p;
+    };
+
+    
+    for(; (c = *p++) != '\0' && c != delimiter;);
+
+    return p;
+}
+
+static int clean_spaces(char* str) {
     char *p = str;
     char *q = str;
+    int counter = 0;
+    int flag = 1;
     for (; *p != '\0'; p++)
     {
-        if (IS_SPACE(*p)) continue;
-        else *q++ = *p;
+        if (IS_SPACE(*p)) {
+            flag = 1;
+            continue;
+        } else {
+            *q++ = *p;
+            counter += flag;
+            flag = 0;
+        };
     }
+
     *q++ = '\0';
+    return counter;
+}
+
+static int contains(char* str, char c) {
+    char* p = str;
+    for (; *p != '\0'; p++) {
+        if (*p == c) return 1;
+    }
+    return 0;
+}
+
+static int is_number(char* str) {
+    if(*str == '-' || *str == '+') str++;
+
+    for (; *str != '\0'; str++) {
+        if (!IS_DIGIT(*str)) return 0;
+    }
+    return 1;
 }
 
 int exec(char* str) {
-    /* init variables */
-    char *p = str;
-    const command* command;
-    set** sets_args;
-    set* current_grp = NULL;
-    char* argument;
-    int i = 0;
-    int* _args;
-    int len = 0;
+    char* p = next_token(&str, ' ');
+    
+    char* command_name = strndup(str, p - str - 1);
 
-    /* skip spaces before command */
-    while (IS_SPACE(*str) && *str != '\0') str++;
+    if(contains(command_name, ',')) error("Illegal comma");
 
-    /* get command */
-    for (; (!IS_SPACE(*p) && *p != '\0'); p++);
-
-    /* duplicate command from string */
-    command = to_command(strndup(str, p-str));
+    const command* command = to_command(command_name);
+    /* first check - command name */
     if (command == NULL) error("Undefined command name");
 
-    /* skip spaces */
-    clean_spaces(p);
-
-    sets_args = (set**) malloc(command->command_type*sizeof(set*));
-
-    for (; i < command->command_type; i++)
-    {
-        argument = NEXT_TOKEN(i, p);
-
-        if (argument == NULL) error("Missing parameter");
-        
-        current_grp = to_set(argument);
-
-        if (current_grp == NULL) error("Undefined set name");
-        
-        sets_args[i] = current_grp;
-    }
-
-    _args = (int*) malloc(0);
+    /* create empty list of sets with size command->type_Command */
+    set** sets_args = (set**) malloc(sizeof(set*));
     
-    if(command->command_type == SET_COMMAND) {
-        int num = 0;
-        char* token;
+    int i = 0;
 
-        while((num = atoi((token = strtok(NULL, COMMA)) == NULL ? "-1" : token)) != -1) {
-            if(!is_valid(num)) error("Invalid set member - value out of range");
-
-            _args[len] = num;
-            _args = (int*) realloc(_args, ++len);
-        };
-
-        if (token == NULL && len != 0) {
-            error("List of set members is not terminated correctly");
-        }
-    }
-
-    if((p[strlen(p)-1] == COMMA[0]) || (NEXT_TOKEN(i, p) != NULL)) error("Extraneous text after end of command");
-
-    switch (command->command_type)
+    for (; i < command->num_of_sets;)
     {
-        case PROGRAM:
-            command->func.program();
+        if (*p == '\0') error("Missing parameter");
+
+        p = next_token(NULL, ',');
+
+        char* set_str = strndup(str, p - str - 1);
+
+        int error = clean_spaces(set_str);
+        
+        if (error == 0) { error("Multiple consecutive commas"); }
+        else if (error > 2) error("Missing comma");
+        
+        set* set = to_set(set_str);
+        if (set == NULL) error("Undefined set name");
+
+        printf("set: %s\n", set_str);
+        
+        sets_args[i++] = set;
+        sets_args = realloc(sets_args, i);
+    }
+
+    int num;
+    int* arr = (int*) malloc(sizeof(int));
+    int len = 0;
+
+    if (command->command_type == READ) {
+        for (;;)
+        {
+            p = next_token(NULL, ',');
+
+            char* str_num = strndup(str, p - str - 1);
+
+            int error = clean_spaces(str_num);
+
+            if(*str_num == '\0') break;
+        
+            if (error == 0) { error("Multiple consecutive commas"); }
+            else if (error > 2) error("Missing comma");
+            
+            if(!is_number(str_num)) error("Invalid set member - not an integer");
+            
+            num = atoi(str_num);
+            
+            if (num == -1) break;
+
+            if(!IS_VALID(num)) error("Invalid set member - value out of range"); 
+
+            arr[len++] = num;
+            arr = realloc(arr, len);
+        }
+
+        if (num != -1) error("List of set members is not terminated correctly");
+    };
+
+    if (*(p-1) != '\0') error("Extraneous text after end of command");
+
+    
+    switch(command->command_type) {
+        case READ:
+            command->func.read(sets_args[0], arr, len);
             break;
-        case SET_COMMAND:
-            command->func.set_command.list_argument(sets_args[0], _args, len);
+        case WRITE:
+            command->func.write(sets_args[0], sets_args[1], sets_args[2]);
             break;
-        case SET_MANIPULATION:
-            command->func.set_manipulation(sets_args[0], sets_args[1], sets_args[2]);
+        case DEBUG:
+            command->func.debug(sets_args[0]);
+            break;
+        case NONE:
+            command->func.none();
             break;
     }
+
+    free(sets_args);
+    free(arr);
     
     return 0;
 }
