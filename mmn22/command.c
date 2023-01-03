@@ -1,25 +1,17 @@
 #include "command.h"
 
-const command set_commands[] = {
-    {"union_set", WRITE, 3, {&union_set}}, 
-    {"intersect_set", WRITE, 3, {&intersect_set} }, 
-    {"sub_set", WRITE, 3, {&sub_set} }, 
-    {"symdiff_set", WRITE, 3, {&symdiff_set} }, 
-    {"print_set", DEBUG, 1, {.debug=&print_set} }, 
-    {"read_set", READ, 1, {.read=&read_set} }, 
-    {"stop", NONE, 0, {.none=&stop} }
-};
 
 const command* to_command(char* str) {
     int i = 0;
-    for (; i < LENGTH(set_commands); i++) {
+    for (; i < NUMBER_OF_COMMANDS; i++) {
         if (equal(str, set_commands[i].name)) return &set_commands[i];
     }
     return NULL;
 }
+
 set* to_set(char* str) {
     int i = 0;
-    for (; i < LENGTH(sets); i++) {
+    for (; i < NUMBER_OF_SETS; i++) {
         if (equal(str, sets[i].name)) return &sets[i];
     }
     return NULL;
@@ -81,12 +73,16 @@ static int is_number(char* str) {
 }
 
 int exec(char* str) {
+    /* DEFS */
+
     /* get first token */
-    char* p = next_token(&str, ' ');
+    char* p = NULL;
 
     /* command pointer and get command name */
-    const command* command;
-    char* command_name = strndup(str, p - str - 1);
+    const command* current_command;
+    set* current_set;
+
+    char* command_name;
     
     /* init list of sets arguments */
     set** sets_args;
@@ -98,20 +94,24 @@ int exec(char* str) {
     char* set_str;
     char* num_str;
 
-    set* current_set;
+    /* START OF CODE */
+    p = next_token(&str, ' ');
 
+    command_name = strndup(str, p - str - 1);
+
+    /* (str->)read_set (<-p) SETA, 1,2, -> Not terminated */
     clean_spaces(command_name);
-
+    
     if(contains(command_name, ',')) error("Illegal comma");
 
-    command = to_command(command_name);
+    current_command = to_command(command_name);
     /* first check - command name */
-    if (command == NULL) error("Undefined command name");
+    if (current_command == NULL) error("Undefined command name");
 
     /* create empty list of sets with size command->type_Command */
-    sets_args = (set**) malloc(sizeof(set*) * command->num_of_sets);
+    sets_args = (set**) malloc(sizeof(set*) * current_command->num_of_sets);
     
-    for (; len < command->num_of_sets;)
+    for (; len < current_command->num_of_sets;)
     {
         if (*p == '\0') error("Missing parameter");
 
@@ -132,7 +132,7 @@ int exec(char* str) {
         sets_args[len++] = current_set;
     }
 
-    if (command->command_type == READ) {
+    if (current_command->command_type == READ) {
         len = 0;
         for (;;)
         {
@@ -165,18 +165,18 @@ int exec(char* str) {
     if (*(p-1) != '\0') error("Extraneous text after end of command");
 
     
-    switch(command->command_type) {
+    switch(current_command->command_type) {
         case READ:
-            command->func.read(sets_args[0], arr, len);
+            current_command->func.read(sets_args[0], arr, len);
             break;
         case WRITE:
-            command->func.write(sets_args[0], sets_args[1], sets_args[2]);
+            current_command->func.write(sets_args[0], sets_args[1], sets_args[2]);
             break;
         case DEBUG:
-            command->func.debug(sets_args[0]);
+            current_command->func.debug(sets_args[0]);
             break;
         case NONE:
-            command->func.none();
+            current_command->func.none();
             break;
     }
 

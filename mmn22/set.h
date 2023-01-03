@@ -11,19 +11,17 @@
 
 #define NUMBER_OF_SETS 6
 
-#define LENGTH(arr) (sizeof(arr) / sizeof(arr[0]))
-
 /* typedef one byte data type */
 typedef char byte;
 
 /* len = number of bytes in optimal set array */
 #define BITS_PER_BYTE (sizeof(byte) * 8)
-#define LEN ((MAX - MIN + 1) / BITS_PER_BYTE)
+#define SET_LEN ((MAX - MIN + 1) / BITS_PER_BYTE)
 
 /* set struct */
 typedef struct {
     char* name;
-    byte arr[LEN];
+    byte arr[SET_LEN];
 } set;
 
 /* extren array of known sets - declared in main program */

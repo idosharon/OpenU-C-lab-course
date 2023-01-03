@@ -19,19 +19,19 @@ void read_set(set* s, int* arr, int len) {
 }
 void union_set(set* A, set* B, set* C) {
     int i = 0; 
-    for (; i < LEN; C->arr[i] = (A->arr[i] | B->arr[i]), i++);
+    for (; i < SET_LEN; C->arr[i] = (A->arr[i] | B->arr[i]), i++);
 }
 void intersect_set(set* A, set* B, set* C) {
     int i = 0; 
-    for (; i < LEN; C->arr[i] = (A->arr[i] & B->arr[i]), i++);
+    for (; i < SET_LEN; C->arr[i] = (A->arr[i] & B->arr[i]), i++);
 }
 void sub_set(set* A, set* B, set* C) {
     int i = 0; 
-    for (; i < LEN; C->arr[i] = (A->arr[i] & !B->arr[i]), i++);
+    for (; i < SET_LEN; C->arr[i] = (A->arr[i] & !B->arr[i]), i++);
 }
 void symdiff_set(set* A, set* B, set* C) {
     int i = 0; 
-    for (; i < LEN; C->arr[i] = (A->arr[i] ^ B->arr[i]), i++);
+    for (; i < SET_LEN; C->arr[i] = (A->arr[i] ^ B->arr[i]), i++);
 }
 void amitai_set(set* A, set* B, set* C) {
     sub_set(A, B, C);
