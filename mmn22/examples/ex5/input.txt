@@ -1,0 +1,4 @@
+read_set SETA, 1, 2, 3
+read_set SETB, 4, 5, 6
+union_set SETA, SETB, SETC
+print_set SETC

@@ -1,0 +1,22 @@
+union_set SETA, SETB, SETC
+
+print_set SETC
+
+read_set SETA, 1, 2, 3, 2, 1, -1
+
+read_set SETB, 2, 3, 4, -1
+
+intersect_set SETA, SETB, SETA
+
+print_set SETA
+print_set SETB
+
+read_set SETA, 3,4,5,6,7,-1
+
+print_set SETA
+
+symdiff_set SETA, SETB, SETC
+
+print_set SETC
+
+print_set SETA, SETB

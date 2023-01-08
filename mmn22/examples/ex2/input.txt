@@ -1,0 +1,9 @@
+read_set SETA, 1, 2, 54, -1
+read_set SETB, 53, 4, 9, 103, -1
+read_set SETC, -1
+
+print_set SETA
+print_set ,SETB
+print_set SETC
+
+stop

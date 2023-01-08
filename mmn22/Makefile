@@ -4,7 +4,7 @@ NAME = myset
 
 objects = myset.o set.o command.o
 
-$(NAME): $(objects)
+$(NAME): clean $(objects)
 	$(cc) $(objects) -o $(NAME)
 
 $(objects): %.o: %.c

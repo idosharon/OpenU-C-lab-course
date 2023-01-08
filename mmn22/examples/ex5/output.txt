@@ -1,0 +1,4 @@
+== examples/ex5/input.txt ==
+>> read_set SETA, 1, 2, 3
+Error: List of set members is not terminated correctly
+Program exited with an error on line: 1

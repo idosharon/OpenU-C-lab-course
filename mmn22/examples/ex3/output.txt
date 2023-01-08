@@ -1,0 +1,20 @@
+== examples/ex3/input.txt ==
+>> union_set SETA, SETB, SETC
+>> print_set SETC
+The set is empty
+>> read_set SETA, 1, 2, 3, 2, 1, -1
+>> read_set SETB, 2, 3, 4, -1
+>> intersect_set SETA, SETB, SETA
+>> print_set SETA
+2 3 
+>> print_set SETB
+2 3 4 
+>> read_set SETA, 3,4,5,6,7,-1
+>> print_set SETA
+3 4 5 6 7 
+>> symdiff_set SETA, SETB, SETC
+>> print_set SETC
+2 5 6 7 
+>> print_set SETA, SETB
+Error: Extraneous text after end of command
+Program exited with an error on line: 12
