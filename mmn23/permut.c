@@ -1,97 +1,106 @@
 #include "permut.h"
 
-void add(node* head, char* value) {
-    node* current = head;
-    for (; current->next != NULL; current = current->next);
+/*
+ * This function checks if the given word is a permutation of the given base_word string.
+ * It returns the index of the first character of the permutation if it is, and -1
+ * if it is not.
+ */
+int is_permutation(char* word, char* base_word, int base_len) {
+    /* set char pointer to the start of the word */
+    int index = -1;
 
-    if (current->value != NULL) {
-        current = (current->next = malloc(sizeof(node)));
-    }
+    /* increase word to the first char in base */
+    word += (index = strcspn(word, base_word));
+    /* check if theres a word from base_word chars with length >= base_len, else return -1 */
+    if(strspn(word, base_word) < base_len) return -1;
 
-    current->value = value;
-    current->next = NULL;
+    /* Return the index of the first character of the permutation */
+    return index;
 }
 
-void print_list(node* head) {
-    node* current = head;
 
-    while (current != NULL) {
-        printf("%s -> ", current->value);
-        current = current->next;
-    }
-    printf("\n");
-}
-
-int contains(char* str, char c) {
-    int counter = 0;
-    for (; *str != '\0'; str++) {
-        counter += (*str == c);
-    }
-    return counter;
-}
-
-node* find_permutations(char* line, char* word) {
-    node* result = (node*) malloc(sizeof(node));
-    int len = strlen(word), i = 0;
-    int* char_counts;
+/* 
+ * This function finds all permutations of the given word in the given line.
+ * It prints the permutations to stdout. 
+*/
+int find_permutations(char* line, char* base_word, int base_word_len) {
+    /* set index and first token */
+    int idx = 0, number_of_permutations = 0;
     char* token = strtok(line, " ");
 
-    char_counts = (int*) malloc(len * sizeof(int));
-    
-    for (; i < len; i++) {
-        char_counts[i] = contains(word, word[i]);
-    }
-    
+    /* loop through tokens */
     for(; token != NULL; token = strtok(NULL, " ")) {
-        token[strcspn(token, "\n")] = '\0';
-
-        if(is_empty(token)) continue;
-
-        i = 0;
-
-        for(; i < len; i++) {
-            if (contains(token, word[i]) != char_counts[i]) {
-                break;
+        /* loop through characters in token if theres still length for base */
+        for (; (*token != '\0') && (strlen(token) >= base_word_len); token++) {
+            /* check if token is a permutation of word */
+            if((idx = is_permutation(token, base_word, base_word_len)) != -1) {
+                /* print the permutation */
+                fprintf(stdout, "%s\n", strndup((token += idx), base_word_len));
+                number_of_permutations++;
             }
         }
-
-        if (i == len) add(result, strndup(token + strcspn(token, word), len));
     }
 
-    return result;
+    return number_of_permutations;
 }
 
 int main(int argc, char* argv[]) {
+    /* declare variables */
     FILE* fp;
-    char* line = NULL;
+    
+    char* data = NULL;
     size_t len = 0;
-    node* head;
-    int lines = 0;
+    char c;
+    
+    char* base_word;
+    int base_word_len = 0, is_empty = 1;
 
+    /* check if the number of parameters is correct */
     if (argc != 3) {
-        fprintf(stderr, "Invalid number of parameters. %d\n", argc);
-        return 1;
+        error("Invalid number of parameters.\n");
     }
 
+    /* copy the base_word string from args */
+    base_word_len = strlen(argv[2]);
+    base_word = (char*) malloc(sizeof(char) * (base_word_len + 1));
+    strcpy(base_word, argv[2]);
+    
+    /* open the file and catch error */
     if((fp = fopen(argv[1], "r")) == NULL) {
-        error("Error opening file\n")
+        error("Error opening file.\n")
     };
 
-    while (getline(&line, &len, fp) != -1) {
-        /* check if line is empty  */
-        if (is_empty(line)) continue;
-        
-        lines++;
-
-        head = find_permutations(line, argv[2]);
-        for (; head != NULL && head->value != NULL; head = head->next) {
-            fprintf(stdout, "%s\n", head->value);
+    /* read the file line by line */
+    while((c = fgetc(fp)) != EOF) {
+        /* if not space mark file as not empty */
+        if (!is_empty(c)) {
+            is_empty = 0;
         }
+        
+        /* update length */
+        len++;
+        /* reallocate memory and catch error */
+        data = (char*) realloc(data, len);
+        if(data == NULL) {
+            error("Error allocating memory.\n");
+        }
+        /* add character to data */
+        data[len - 1] = c;
     }
 
-    if (lines == 0) {
-        error("File is empty\n")
+    /* check if file is empty */
+    if (is_empty) {
+        error("File is empty.\n")
     };
+
+    /* find permutations of base_word in data */
+    if(!find_permutations(data, base_word, base_word_len)) {
+        fprintf(stdout, "No permutations found.\n");
+    }
+
+    /* free memory and close file */
+    free(data);
+    fclose(fp);
 
     return 0;
 }

@@ -1,0 +1,8 @@
+>> ./permut tests/4.in test
+Error opening file.
+
+>> ./permut tests/5.in
+Invalid number of parameters.
+
+./permut tests/empty.in empty
+File is empty.

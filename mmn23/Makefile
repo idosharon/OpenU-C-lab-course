@@ -4,7 +4,7 @@ NAME = permut
 
 objects = permut.o
 
-$(NAME): clean $(objects)
+$(NAME): $(objects)
 	$(cc) $(objects) -o $(NAME)
 
 $(objects): %.o: %.c
